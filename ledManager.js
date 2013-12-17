@@ -11,16 +11,12 @@ if (config.mockLed) {
     gpio = require('./pi-gpio-mock');
 }
 
-var redpin = 16;
-var greenpin = 18;
-var bluepin = 22;
-
 exports.turnOn = function (red, green, blue) {
 
     return q.all([
-            gpio.open(redpin, 'out'),
-            gpio.open(greenpin, 'out'),
-            gpio.open(bluepin, 'out')
+            gpio.open(config.led.redpin, 'out'),
+            gpio.open(config.led.greenpin, 'out'),
+            gpio.open(config.led.bluepin, 'out')
         ]).then(function () {
 
             return ledRGB(red, green, blue).then(function () {
@@ -43,16 +39,17 @@ exports.turnOn = function (red, green, blue) {
 
 function ledRGB(red, green, blue) {
     return q.all([
-        gpio.write(redpin, !red),
-        gpio.write(greenpin, !green),
-        gpio.write(bluepin, !blue)]);
+        gpio.write(config.led.redpin, !red),
+        gpio.write(config.led.greenpin, !green),
+        gpio.write(config.led.bluepin, !blue)]);
 }
 
 function closeAll() {
 
-    return q.all([gpio.close(redpin),
-        gpio.close(greenpin),
-        gpio.close(bluepin)
+    return q.all([
+        gpio.close(config.led.redpin),
+        gpio.close(config.led.greenpin),
+        gpio.close(config.led.bluepin)
     ]);
 }
 

@@ -26,7 +26,7 @@ exports.turnOn = function (red, green, blue) {
 
                 setTimeout(function () {
                     ledRGB(false, false, false).then(function () {
-                        closeAll().then(function(){
+                        closeAll().then(function () {
                             defered.resolve();
                         });
                     });
@@ -40,8 +40,6 @@ exports.turnOn = function (red, green, blue) {
             //error
             console.log('error in led ' + error);
             return closeAll();
-
-        }).finalize(function(){
 
         });
 };

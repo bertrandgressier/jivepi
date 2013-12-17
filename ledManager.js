@@ -17,64 +17,43 @@ var bluepin = 22;
 
 exports.turnOn = function (red, green, blue) {
 
-    var promises = [];
-    if (red) {
-        promises.push(gpio.open(redpin, 'out'));
-    }
-    if (green) {
-        promises.push(gpio.open(greenpin, 'out'));
-    }
-    if (blue) {
-        promises.push(gpio.open(bluepin, 'out'));
-    }
+    return q.all([
+            gpio.open(redpin, 'out'),
+            gpio.open(greenpin, 'out'),
+            gpio.open(bluepin, 'out')
+        ]).then(function () {
 
-    q.all(promises).then(function () {
+            return ledRGB(red, green, blue).then(function () {
+                //reset
+                setTimeout(function () {
+                    ledRGB(false, false, false).then(function () {
+                        closeAll();
+                    });
 
-        if (red) {
-            gpio.write(redpin, false);
-        }
-        if (green) {
-            gpio.write(greenpin, false);
-        }
-        if (blue) {
-            gpio.write(bluepin, false);
-        }
+                }, 2000);
+            });
 
-        //reset
-        setTimeout(function () {
-            if (red) {
-                gpio.write(redpin, true);
-            }
-            if (green) {
-                gpio.write(greenpin, true);
-            }
-            if (blue) {
-                gpio.write(bluepin, true);
-            }
+        }, function (error) {
+            //error
+            console.log('error in led ' + error);
+            return closeAll();
 
-            closeAll(red, green, blue);
-        }, 2000);
-
-
-    }, function () {
-        //error
-        return closeAll(red, green, blue);
-    });
+        });
 };
 
-function closeAll(red, green, blue) {
-    var promises = [];
-    if (red) {
-        promises.push(gpio.close(redpin));
-    }
-    if (green) {
-        promises.push(gpio.close(greenpin));
-    }
-    if (blue) {
-        promises.push(gpio.close(bluepin));
-    }
+function ledRGB(red, green, blue) {
+    return q.all([
+        gpio.write(redpin, !red),
+        gpio.write(greenpin, !green),
+        gpio.write(bluepin, !blue)]);
+}
 
-    return q.all(promises);
+function closeAll() {
+
+    return q.all([gpio.close(redpin),
+        gpio.close(greenpin),
+        gpio.close(bluepin)
+    ]);
 }
 
 

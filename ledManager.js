@@ -21,18 +21,27 @@ exports.turnOn = function (red, green, blue) {
 
             return ledRGB(red, green, blue).then(function () {
                 //reset
+
+                var defered = q.defer();
+
                 setTimeout(function () {
                     ledRGB(false, false, false).then(function () {
-                        closeAll();
+                        closeAll().then(function(){
+                            defered.resolve();
+                        });
                     });
 
                 }, 2000);
+
+                return defered.promise;
             });
 
         }, function (error) {
             //error
             console.log('error in led ' + error);
             return closeAll();
+
+        }).finalize(function(){
 
         });
 };

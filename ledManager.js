@@ -11,37 +11,42 @@ if (config.mockLed) {
     gpio = require('./pi-gpio-mock');
 }
 
-exports.turnOn = function (red, green, blue) {
+exports.setup = function () {
+    return q.all([
+        gpio.open(config.led.redpin, 'out'),
+        gpio.open(config.led.greenpin, 'out'),
+        gpio.open(config.led.bluepin, 'out')
+    ]);
+};
+
+exports.closeAll = function () {
 
     return q.all([
-            gpio.open(config.led.redpin, 'out'),
-            gpio.open(config.led.greenpin, 'out'),
-            gpio.open(config.led.bluepin, 'out')
-        ]).then(function () {
+        gpio.close(config.led.redpin),
+        gpio.close(config.led.greenpin),
+        gpio.close(config.led.bluepin)
+    ]);
+};
 
-            return ledRGB(red, green, blue).then(function () {
-                //reset
+exports.turnOn = function (red, green, blue) {
 
-                var defered = q.defer();
+    return ledRGB(red, green, blue).then(function () {
 
-                setTimeout(function () {
-                    ledRGB(false, false, false).then(function () {
-                        closeAll().then(function () {
-                            defered.resolve();
-                        });
-                    });
+        var defered = q.defer();
 
-                }, 2000);
-
-                return defered.promise;
+        setTimeout(function () {
+            ledRGB(false, false, false).then(function () {
+                defered.resolve();
             });
+        }, 2000);
 
-        }, function (error) {
-            //error
-            console.log('error in led ' + error);
-            return closeAll();
+        return defered.promise;
 
-        });
+    }, function (error) {
+        //error
+        console.log('error in led ' + error);
+        return error;
+    });
 };
 
 function ledRGB(red, green, blue) {
@@ -49,15 +54,6 @@ function ledRGB(red, green, blue) {
         gpio.write(config.led.redpin, !red),
         gpio.write(config.led.greenpin, !green),
         gpio.write(config.led.bluepin, !blue)]);
-}
-
-function closeAll() {
-
-    return q.all([
-        gpio.close(config.led.redpin),
-        gpio.close(config.led.greenpin),
-        gpio.close(config.led.bluepin)
-    ]);
 }
 
 

@@ -36,9 +36,15 @@ function main() {
     setTimeout(main, 10000);
 };
 
-ledManager.setup().then(function () {
-    main();
+//begin with close all if previously it's not
+ledManager.closeAll().then(function () {
+    return ledManager.setup().then(function () {
+        main();
+    });
+}, function (error) {
+    console.log(error);
 });
+
 
 
 

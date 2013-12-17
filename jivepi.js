@@ -27,6 +27,9 @@ schedule.scheduleJob(rule, function () {
         case 'CREATE':
             ledManager.turnOn(0, 1, 0);
             break;
+        case 'UNKNOWN':
+            console.log('UNKNOWN type');
+            break;
         }
     });
 });

@@ -7,6 +7,10 @@ var q = require('q');
 
 var config = require('./config');
 
+if (config.mockLed) {
+    gpio = require('./pi-gpio-mock');
+}
+
 var redpin = 16;
 var greenpin = 18;
 var bluepin = 22;
@@ -49,8 +53,7 @@ exports.turnOn = function (red, green, blue) {
             }
 
             closeAll(red, green, blue);
-
-        }, 1000);
+        }, 2000);
 
 
     }, function () {
@@ -71,14 +74,8 @@ function closeAll(red, green, blue) {
         promises.push(gpio.close(bluepin));
     }
 
-    return q.all(promises)
+    return q.all(promises);
 }
 
-if (config.mockLed) {
-
-    exports.turnOn = function (red, green, blue) {
-        console.log('turn ON >> red:' + red + ' green:' + green + ' blue:' + blue);
-    };
-}
 
 

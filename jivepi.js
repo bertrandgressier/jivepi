@@ -36,20 +36,13 @@ function main() {
     setTimeout(main, 10000);
 };
 
-//begin with close all if previously it's not
-ledManager.closeAll().then(function () {
-    return ledManager.setup().then(function () {
+
+//add in your script launcher gpio-admin unexport <port> if you need to relaunch
+ledManager.setup().then(
+    function () {
         main();
-    });
-}, function (error) {
-    console.log(error);
-});
-
-
-
-
-
-
-
-
-
+    }, 
+    function (error) {
+        console.log(error);
+    }
+);

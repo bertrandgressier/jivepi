@@ -26,3 +26,26 @@ config.led = {
 
 module.exports = config;
 ```
+
+upstart service 
+======
+
+```
+description "Jivepi upstart service"
+
+start on filesystem and net-device-up IFACE=eth0
+stop on runlevel [016]
+
+respawn
+
+post-stop script
+  echo "`date` : stop jivepi" >> /home/pi/jivepi.log
+end script
+
+script
+  export HOME="/home/pi"
+  echo "`date` : start jivepi" >> /home/pi/jivepi.log
+  cd /home/pi
+  exec /home/pi/launchJivePi.sh >> /home/pi/jivepi.log 2>&1
+end script
+```
